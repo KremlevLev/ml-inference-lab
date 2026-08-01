@@ -219,7 +219,7 @@ for epoch in range(num_epochs):
 
 accuracy = correct / total
 train_loss = running_loss / len(train_loader)
-
+print(f"Train Loss: {train_loss:.4f}, Train Accuracy: {accuracy:.4f}")
 model.eval()
 
 test_loss_sum = 0.0
@@ -242,3 +242,4 @@ with torch.no_grad():
 test_accuracy = test_correct / test_total
 test_loss = test_loss_sum / len(test_loader)
 
+print(f"Test Loss: {test_loss:.4f}, Test Accuracy: {test_accuracy:.4f}")

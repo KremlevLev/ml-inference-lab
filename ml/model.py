@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
+import os
+max_workers = os.cpu_count()
 
 class ResidualDepthwiseBlock(nn.Module):
     def __init__(self, channels: int):
@@ -126,7 +128,11 @@ class ModernLightCNN(nn.Module):
         return logits
 
 model = ModernLightCNN(num_classes=10)
-
+if torch.cuda.device_count() > 1:
+    print(f"Используем {torch.cuda.device_count()} GPU!")
+    model = nn.DataParallel(model) 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model.to(device)
 x = torch.randn(8, 3, 32, 32)
 logits = model(x)
 
@@ -164,30 +170,27 @@ test_dataset = datasets.CIFAR10(
 
 train_loader = DataLoader(
     train_dataset,
-    batch_size=128,
+    batch_size=2048,
     shuffle=True,
-    num_workers=0,
+    num_workers=max_workers,
+    pin_memory=True,
 )
 
 test_loader = DataLoader(
     test_dataset,
-    batch_size=128,
+    batch_size=2048,
     shuffle=False,
-    num_workers=0,
+    num_workers=max_workers,
+    pin_memory=True,
 )
 
-device = torch.device(
-    "cuda" if torch.cuda.is_available() else "cpu"
-)
-
-model = model.to(device)
 
 #model
 
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.AdamW(
     model.parameters(),
-    lr=3e-4,
+    lr=1.2e-3,
     weight_decay=1e-4,
 )
 

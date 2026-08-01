@@ -190,23 +190,28 @@ class ModernLightCNN(nn.Module):
 model = ModernLightCNN(num_classes=NUM_CLASSES)
 model = model.to(device)
 
-# Для маленькой модели DataParallel не всегда ускоряет обучение,
-# но оставляем поддержку нескольких GPU.
-if torch.cuda.device_count() > 1:
-    print(f"Используем {torch.cuda.device_count()} GPU")
-    model = nn.DataParallel(model)
+# Проверяем shape ДО DataParallel.
+# Для проверки модель переводим в eval, чтобы BatchNorm
+# не обновлял running statistics.
+model.eval()
 
-
-# Проверка shape
 dummy_input = torch.randn(
     8, 3, 32, 32,
     device=device,
 )
 
-with torch.inference_mode():
+with torch.no_grad():
     dummy_logits = model(dummy_input)
 
 print(f"Model output shape: {dummy_logits.shape}")
+
+# Возвращаем режим обучения.
+model.train()
+
+# Только после dummy-проверки оборачиваем модель.
+if torch.cuda.device_count() > 1:
+    print(f"Используем {torch.cuda.device_count()} GPU")
+    model = nn.DataParallel(model)
 
 trainable_parameters = sum(
     parameter.numel()

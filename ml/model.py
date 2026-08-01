@@ -149,14 +149,14 @@ test_transforms = transforms.Compose([
 ])
 
 train_dataset = datasets.CIFAR10(
-    root='/kaggle/working/',   
+    root='/kaggle/input/datasets/pankrzysiu/cifar10-python/cifar-10-python.tar.gz',   
     train=True,           
     download=False,         
     transform=train_transforms
 )
 
 test_dataset = datasets.CIFAR10(
-    root='/kaggle/working/',   
+    root='/kaggle/input/datasets/pankrzysiu/cifar10-python/cifar-10-python.tar.gz',   
     train=False,           
     download=False,         
     transform=test_transforms

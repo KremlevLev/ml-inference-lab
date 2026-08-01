@@ -26,7 +26,7 @@ WEIGHT_DECAY = 5e-4
 
 VAL_SIZE = 5_000
 
-PATIENCE = 10
+PATIENCE = 20
 MIN_DELTA = 1e-4
 
 NUM_WORKERS = min(os.cpu_count() or 2, 4)
